@@ -1,0 +1,179 @@
+﻿CREATE DATABASE AULA2004;
+
+CREATE TABLE ALUNO(
+	CODALUNO SERIAL PRIMARY KEY,
+	NOME VARCHAR(80) NOT NULL,
+	CPF CHAR(11) NOT NULL UNIQUE,
+	OBSERVACAO TEXT,
+	ATIVO BOOLEAN NOT NULL
+);
+
+INSERT INTO ALUNO (NOME, CPF, ATIVO) VALUES('MARCOS ANTONIO ESTREMOTE','27769491899',TRUE);
+INSERT INTO ALUNO (NOME, CPF, ATIVO) VALUES('EDSON ARANTES DO NASCIMENTO','27769491890',TRUE);
+INSERT INTO ALUNO (NOME, CPF, ATIVO, OBSERVACAO) VALUES('LETÍCIA DA SILVA','27769491898',TRUE, 'ALUNA SUPER DOTADA');
+
+CREATE TABLE CURSO(
+	CODCURSO SERIAL PRIMARY KEY,
+	NOMECURSO VARCHAR(80) NOT NULL UNIQUE
+);
+
+INSERT INTO CURSO(NOMECURSO) VALUES ('C++');
+INSERT INTO CURSO(NOMECURSO) VALUES ('PHP');
+INSERT INTO CURSO(NOMECURSO) VALUES ('JAVA');
+INSERT INTO CURSO(NOMECURSO) VALUES ('C#');
+
+CREATE TABLE ITENS_ALUNO_CURSO(
+	CODALUNO_FK INTEGER REFERENCES ALUNO(CODALUNO) MATCH SIMPLE ON UPDATE CASCADE,
+	CODCURSO_FK INTEGER REFERENCES CURSO(CODCURSO) MATCH SIMPLE ON UPDATE CASCADE
+);
+
+ALTER TABLE ITENS_ALUNO_CURSO ADD CONSTRAINT Pk_COMPOSTA PRIMARY KEY (CODALUNO_FK, CODCURSO_FK);
+
+
+INSERT INTO ITENS_ALUNO_CURSO (CODALUNO_FK, CODCURSO_FK) VALUES (1, 3);
+INSERT INTO ITENS_ALUNO_CURSO (CODALUNO_FK, CODCURSO_FK) VALUES (1, 2);
+INSERT INTO ITENS_ALUNO_CURSO (CODALUNO_FK, CODCURSO_FK) VALUES (3, 1);
+
+--CONSULTAS COM JOIN / INNER JOIN
+
+SELECT *
+FROM ALUNO
+INNER JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+INNER JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO; 
+
+SELECT *
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO;
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO;
+
+
+-- CONSULTAS LEFT, RIGHT, CROSS E FULL JOIN
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+LEFT JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+LEFT JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO;
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+RIGHT JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+RIGHT JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO;
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+FULL JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+FULL JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO;
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+CROSS JOIN CURSO;
+
+-- ORDENANDO AS CONSULTAS COM VÁRIOS CAMPOS
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY aluno.nome;
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY aluno.nome desc;
+
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY aluno.nome desc, curso.nomecurso desc;
+
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY 2 desc, 3 desc;
+
+-- LIMITANDO RETORNO DO SELECT
+
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY 2 desc, 3 desc
+LIMIT 2;
+
+-- PAGINAÇÃO COM OFFSET
+SELECT aluno.codaluno as "Código do Aluno", aluno.nome as "Nome do Aluno", curso.nomecurso as "Curso"
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+ORDER BY 2 desc, 3 desc
+LIMIT 2
+OFFSET 0; -- INCREMENTAR O OFFSET
+
+-- consultas agrupadas
+SELECT  aluno.nome as "Nome do Aluno", count(curso.codcurso)
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+GROUP BY aluno.nome
+ORDER BY aluno.nome desc
+
+SELECT   curso.nomecurso as "Nome do Curso", count(aluno.nome)
+FROM ALUNO
+JOIN ITENS_ALUNO_CURSO ON ALUNO.CODALUNO = ITENS_ALUNO_CURSO.CODALUNO_FK
+JOIN CURSO ON ITENS_ALUNO_CURSO.CODCURSO_FK = CURSO.CODCURSO
+GROUP BY aluno.nome, curso.nomecurso
+ORDER BY aluno.nome desc
+
+
+-- QUAIS CURSOS NÃO POSSUEM ALUNOS MATRICULADOS
+
+SELECT curso.nomecurso, count(aluno.codaluno)
+FROM CURSO
+LEFT JOIN ITENS_ALUNO_CURSO ON curso.codcurso = itens_aluno_curso.codcurso_fk
+LEFT JOIN ALUNO ON aluno.codaluno = itens_aluno_curso.codaluno_fk
+GROUP BY curso.nomecurso
+
+
+-- condições com funções de agrupamento
+SELECT curso.nomecurso, count(aluno.codaluno)
+FROM CURSO
+LEFT JOIN ITENS_ALUNO_CURSO ON curso.codcurso = itens_aluno_curso.codcurso_fk
+LEFT JOIN ALUNO ON aluno.codaluno = itens_aluno_curso.codaluno_fk
+GROUP BY curso.nomecurso
+
+-- qual o curso não tem alunos
+SELECT curso.nomecurso, count(aluno.codaluno)
+FROM CURSO
+LEFT JOIN ITENS_ALUNO_CURSO ON curso.codcurso = itens_aluno_curso.codcurso_fk
+LEFT JOIN ALUNO ON aluno.codaluno = itens_aluno_curso.codaluno_fk
+GROUP BY curso.nomecurso
+having count(aluno.codaluno)=0
+
+-- quais cursos tem alunos
+SELECT curso.nomecurso, count(aluno.codaluno)
+FROM CURSO
+LEFT JOIN ITENS_ALUNO_CURSO ON curso.codcurso = itens_aluno_curso.codcurso_fk
+LEFT JOIN ALUNO ON aluno.codaluno = itens_aluno_curso.codaluno_fk
+GROUP BY curso.nomecurso
+having count(aluno.codaluno)>0
+
+-- quais cursos tem alunos
+SELECT curso.nomecurso, count(aluno.codaluno)
+FROM CURSO
+LEFT JOIN ITENS_ALUNO_CURSO ON curso.codcurso = itens_aluno_curso.codcurso_fk
+LEFT JOIN ALUNO ON aluno.codaluno = itens_aluno_curso.codaluno_fk
+GROUP BY curso.nomecurso
+having count(aluno.codaluno)>0 and count(aluno.codaluno)<10
+
+
+
